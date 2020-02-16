@@ -1,0 +1,28 @@
+---
+# Tasks specific for Arch Linux Systems
+
+- name: "Arch Linux | Installing zabbix-agent"
+  pacman:
+    pkg:
+      - "{{ zabbix_agent_package }}"
+    state: "{{ zabbix_agent_package_state }}"
+    update_cache: yes
+  when: ansible_distribution in ['Archlinux']
+  register: zabbix_agent_package_installed
+  until: zabbix_agent_package_installed is succeeded
+  become: yes
+  check_mode: no
+  tags:
+    - zabbix-agent
+    - init
+
+- name: "Arch Linux | Enable the service"
+  service:
+    name: "{{ zabbix_agent_service }}"
+    enabled: yes
+    use: service
+  become: yes
+  tags:
+    - zabbix-agent
+    - init
+    - service
