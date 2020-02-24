@@ -26,3 +26,67 @@
     - zabbix-agent
     - init
     - service
+
+- name: "Arch Linux | Install python-netaddr"
+  pacman:
+    pkg: python-netaddr
+    state: present
+  when: ansible_distribution in ['Archlinux']
+  register: zabbix_agent_package_installed
+  until: zabbix_agent_package_installed is succeeded
+  become: yes
+  check_mode: no
+  tags:
+    - zabbix-agent
+    - init
+
+- name: "Arch Linux | Create Zabbix log dir"
+  file:
+    path: '{{ zabbix_agent_logfile | dirname }}'
+    state: directory
+    owner: '{{ zabbix_agent_user }}'
+    group: root
+    mode: '0755'
+  when: ansible_distribution in ['Archlinux']
+  become: yes
+  tags:
+    - zabbix-agent
+    - init
+
+- name: "Arch Linux | Create Zabbix systemd service override directory"
+  file:
+    path: /etc/systemd/system/zabbix-agent.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: ansible_distribution in ['Archlinux']
+  become: yes
+  tags:
+    - zabbix-agent
+    - init
+
+- name: "Arch Linux | Create Zabbix systemd service override"
+  template:
+    src: "archlinux/zabbix-agent.override.service.j2"
+    dest: "/etc/systemd/system/zabbix-agent.service.d/override.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  when: ansible_distribution in ['Archlinux']
+  become: yes
+  notify:
+    - restart zabbix-agent
+  tags:
+    - zabbix-agent
+    - init
+
+- name: "Arch Linux | Reload systemd"
+  systemd:
+    daemon_reload: yes
+  become: true
+  when: ansible_distribution in ['Archlinux']
+  tags:
+    - zabbix-agent
+    - init
+

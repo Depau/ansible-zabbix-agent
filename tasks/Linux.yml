@@ -35,7 +35,7 @@
   fail:
     msg: "The specified network interface does not exist"
   when:
-    - zabbix_agent_listeninterface
+    - zabbix_agent_listeninterface | ipv4 | bool
     - (zabbix_agent_listeninterface not in ansible_all_ipv4_addresses)
   tags:
     - zabbix-agent
@@ -45,7 +45,7 @@
   set_fact:
     network_interface: ansible_{{ zabbix_agent_listeninterface }}
   when:
-    - zabbix_agent_listeninterface
+    - zabbix_agent_listeninterface | ipv4 | bool
     - not zabbix_agent_listenip
 
 - name: "Get IP of agent_listeninterface when no agent_listenip specified"
@@ -53,7 +53,7 @@
     zabbix_agent_listenip: "{{ hostvars[inventory_hostname][network_interface]['ipv4'].address | default('0.0.0.0') }}"
     zabbix_agent_ip: "{{ hostvars[inventory_hostname][network_interface]['ipv4'].address | default('0.0.0.0') }}"
   when:
-    - zabbix_agent_listeninterface
+    - zabbix_agent_listeninterface | ipv4 | bool
     - not zabbix_agent_listenip
   tags:
     - zabbix-agent
@@ -160,8 +160,8 @@
   copy:
     dest: "{{ zabbix_agent_tlspskfile }}"
     content: "{{ zabbix_agent_tlspsk_secret }}"
-    owner: zabbix
-    group: zabbix
+    owner: "{{ zabbix_agent_user }}"
+    group: "{{ zabbix_agent_group }}"
     mode: 0400
   become: yes
   when:
@@ -174,7 +174,7 @@
   file:
     path: "{{ zabbix_agent_include }}"
     owner: root
-    group: zabbix
+    group: '{{ zabbix_agent_group }}'
     mode: 0750
     state: directory
   become: yes

@@ -28,3 +28,4 @@
   when:
     - not zabbix_agent_docker
     - zabbix_agent_os_family == "Darwin"
+

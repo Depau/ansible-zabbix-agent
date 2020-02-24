@@ -7,7 +7,7 @@
 ### option: pidfile
 #       name of pid file.
 #
-{% if zabbix_agent_os_family != "Windows" %}
+{% if zabbix_agent_os_family != "Windows" and zabbix_agent_pidfile is defined and zabbix_agent_pidfile %}
 PidFile={{ zabbix_agent_pidfile }}
 {% endif %}
 

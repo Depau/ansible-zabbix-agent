@@ -55,6 +55,8 @@ zabbix_host_status: enabled       # or disabled
 zabbix_proxy: null
 zabbix_inventory_mode: disabled
 zabbix_useuip: 1
+zabbix_agent_user: zabbix
+zabbix_agent_group: zabbix
 zabbix_host_groups:
   - Linux servers
 zabbix_link_templates:
